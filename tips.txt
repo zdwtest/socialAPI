@@ -60,15 +60,14 @@ social_media_backend/  # 项目根目录
 └── app.py             # 主函数
 
 数据库
-# 在其他模块中使用 db
-from app import db, create_app
-from app.models import User
 
-app = create_app()
+from app.models import User, Tweet
 
-@app.route('/')
-def index():
-    users = User.select()
-    # ...
+# 创建用户
+#user = User.create(username='john1', password='secret', email='john1@example.com', age=30)
+
+# 创建推文
+tweet = Tweet.create(user_id="john1", content='Hello, world! TEST1')
+
 
 以上内容为ai生成

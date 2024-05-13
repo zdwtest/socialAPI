@@ -1,9 +1,14 @@
+import os
 from flask import Flask
 from peewee import SqliteDatabase, Model, CharField, IntegerField
-from config  import Config
+from config import Config
 
-# 创建 Peewee 数据库实例
-db = SqliteDatabase('mydb.db')
+# 获取项目根目录
+project_root = os.path.dirname(os.path.abspath(__file__))
+database_path = os.path.join(project_root, 'mydb.db')
+
+# 使用绝对路径创建 Peewee 数据库实例
+db = SqliteDatabase(database_path)
 
 
 def create_app(config_class=Config):
