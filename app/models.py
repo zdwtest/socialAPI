@@ -3,7 +3,7 @@ from datetime import datetime, timezone, timedelta
 
 from app import db  # 从 app/__init__.py 中导入数据库实例
 
-from peewee import CharField, IntegerField, ForeignKeyField, TextField, DateTimeField, Model
+from peewee import CharField, IntegerField, ForeignKeyField, TextField, DateTimeField
 
 utc_now = datetime.now(timezone.utc)
 now = bj_dt = utc_now.astimezone(timezone(timedelta(hours=8)))
