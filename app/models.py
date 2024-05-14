@@ -38,4 +38,4 @@ class Reply(db.Model):
 
 
 # 创建数据库表
-db.create_tables([User, Tweet])
+db.create_tables([User, Tweet, Reply])
