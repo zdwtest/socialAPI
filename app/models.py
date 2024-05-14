@@ -1,9 +1,13 @@
 # 数据库模型
-import datetime
+from datetime import datetime, timezone, timedelta
 
 from app import db  # 从 app/__init__.py 中导入数据库实例
 
 from peewee import CharField, IntegerField, ForeignKeyField, TextField, DateTimeField, Model
+
+utc_now = datetime.now(timezone.utc)
+now = bj_dt = utc_now.astimezone(timezone(timedelta(hours=8)))
+# 创建时区UTC+8:00，即东八区对应的时区
 
 
 class User(db.Model):
@@ -21,7 +25,7 @@ class Tweet(db.Model):
     tag = TextField()  # 标签
     like = CharField()  # 点赞数
     view = CharField()  # 观看数
-    created_at = DateTimeField(default=datetime.datetime.now)  # 创建时间
+    created_at = DateTimeField(default=now)  # 创建时间
 
 
 # 创建数据库表
