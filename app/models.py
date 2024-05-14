@@ -7,6 +7,8 @@ from peewee import CharField, IntegerField, ForeignKeyField, TextField, DateTime
 
 utc_now = datetime.now(timezone.utc)
 now = bj_dt = utc_now.astimezone(timezone(timedelta(hours=8)))
+
+
 # 创建时区UTC+8:00，即东八区对应的时区
 
 
@@ -25,6 +27,13 @@ class Tweet(db.Model):
     tag = TextField()  # 标签
     like = CharField()  # 点赞数
     view = CharField()  # 观看数
+    created_at = DateTimeField(default=now)  # 创建时间
+
+
+class Reply(db.Model):
+    """评论模型"""
+    user = ForeignKeyField(User, backref='replies')  # 关联用户模型，反向关系为 'replies'
+    content = TextField()
     created_at = DateTimeField(default=now)  # 创建时间
 
 
