@@ -1,41 +1,41 @@
-from flask import Flask, make_response, request
-import hashlib
+from flask import Flask, make_response, request, jsonify, json
 from app.db import connect_database
+from app.services.register import register
+
+app = Flask(__name__)
 
 
-def register(username, password, email, age=None):
-    """用户注册"""
-    # 连接到数据库
-    conn = connect_database()
+@app.route('/register', methods=['POST', 'GET'])
+def register_route():
+    if request.method == 'GET':
+        # 处理GET请求，例如提供登录页面（如果是API，可以省略）
+        response = {"message": "请通过POST请求提交用户名和密码进行注册"}
+        return app.response_class(
+            response=json.dumps(response, ensure_ascii=False),
+            mimetype='application/json'
+        )
+    elif request.method == 'POST':
+        # 获取JSON格式的请求数据
+        # JSON格式为{"username": "username", "password": "password","email":"email"}
+        data = request.json
+        username = data.get('username')
+        password = data.get('password')
+        email = data.get('email')
+        age = data.get('age')
 
-    # 检查用户名是否已经存在
-    cur = conn.cursor()
-    cur.execute("SELECT * FROM user WHERE username=?", (username,))
-    existing_user = cur.fetchone()
-    if existing_user:
-        print("用户名已经存在，请选择其他用户名！")
-        return
+        # 检查参数
+        if not username or not password:
+            return jsonify({"success": False, "message": "用户名和密码不能为空"}), 400
 
-    # 将密码进行哈希处理
-    hashed_password = hashlib.sha256(password.encode()).hexdigest()
-
-    # 插入新用户到数据库
-    cur.execute("INSERT INTO user (username, password, email, age) VALUES (?, ?, ?, ?)",
-                (username, hashed_password, email, age))
-    conn.commit()
-    print("注册成功！")
-
-    # 关闭数据库连接
-    cur.close()
-    conn.close()
+        # 调用登录函数验证用户
+        success, message = register( username, password,email)
+        response = {"success": success, "message": message}
+        return app.response_class(
+            response=json.dumps(response, ensure_ascii=False),
+            status=200 if success else 401,
+            mimetype='application/json'
+        )
 
 
-if __name__ == "__main__":
-    # 用户输入注册信息
-    username = input("请输入用户名：")
-    password = input("请输入密码：")
-    email = input("请输入邮箱：")
-    age = input("请输入年龄（可选）：")
-
-    # 进行注册
-    register(username, password, email, age)
+if __name__ == '__main__':
+    app.run(debug=True)

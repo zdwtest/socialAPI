@@ -1,4 +1,4 @@
-from flask import Flask, make_response, request
+from flask import Flask, make_response, request, redirect
 from app.JWT import create_jwt, verify_jwt, create_expiredJWT
 from app.encrypt import encrypt_data, decrypt_data
 from config import Config
@@ -28,23 +28,26 @@ def expired():
     return resp
 
 
-@app.route('/setcookies')
-def set_cookies():
-    user_id = "12345"
-    session_id = "abcde12345"
-    user_prefs = '{"theme": "dark", "language": "en"}'
-    # 创建JWT
+def set_cookies(user_id, session_id, user_prefs='none'):
+    # 创建 JWT
     auth_token = create_jwt({"user_id": user_id, "session_id": session_id}, SECRET_KEY_origin)
-    encrypted_user_id = encrypt_data(user_id, SECRET_KEY)  # 用户名
-    encrypted_session_id = encrypt_data(session_id, SECRET_KEY)  # 用户session，应用与无状态web
-    encrypted_user_prefs = encrypt_data(user_prefs, SECRET_KEY)  # 用户首选项
 
-    resp = make_response("Cookies have been set!")
-    resp.set_cookie('userid', encrypted_user_id)
-    resp.set_cookie('session_id', encrypted_session_id)
-    resp.set_cookie('user_prefs', encrypted_user_prefs)
-    resp.set_cookie('auth_token', auth_token)
-    return resp
+    # 加密敏感数据
+    encrypted_user_id = encrypt_data(user_id, SECRET_KEY)
+    encrypted_session_id = encrypt_data(session_id, SECRET_KEY)
+    encrypted_user_prefs = encrypt_data(user_prefs, SECRET_KEY)
+
+    # 创建字典
+    cookie_data = {
+        'auth_token': auth_token,
+        'encrypted_user_id': encrypted_user_id,
+        'encrypted_session_id': encrypted_session_id,
+        'encrypted_user_prefs': encrypted_user_prefs
+    }
+
+    return cookie_data
+
+
 
 
 @app.route('/getcookies')  # 测试使用
