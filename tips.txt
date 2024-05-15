@@ -70,4 +70,54 @@ from app.models import User, Tweet
 tweet = Tweet.create(user_id="john1", content='Hello, world! TEST1')
 
 
+#加密部分
+
+在 Python 中使用 Twofish 对称加密算法，你可以使用 PyCryptodome 库。以下是使用 Twofish 加密和解密数据的步骤：
+1. 安装 PyCryptodome:
+pip install pycryptodome
+2. 导入必要的模块:
+from Crypto.Cipher import Twofish
+from Crypto.Random import get_random_bytes
+3. 生成密钥:
+Twofish 算法支持 128 位、192 位和 256 位的密钥长度。
+key = get_random_bytes(32)  # 生成 256 位密钥
+4. 创建 Twofish 密码对象:
+cipher = Twofish.new(key, Twofish.MODE_CBC)  # 使用 CBC 模式
+Use code with caution.
+Python
+注意:
+CBC 模式需要一个初始化向量 (IV)。IV 的长度必须与块大小相同（Twofish 的块大小为 128 位，即 16 字节）。
+你可以使用 get_random_bytes 函数生成一个随机的 IV。
+IV 应该与密文一起存储或传输，以便在解密时使用。
+5. 加密数据:
+iv = get_random_bytes(16)  # 生成随机 IV
+data = b"This is a secret message."
+
+# 使用 PKCS#7 填充数据
+padding_length = 16 - (len(data) % 16)
+data += bytes([padding_length] * padding_length)
+
+ciphertext = cipher.encrypt(data)
+Use code with caution.
+Python
+6. 解密数据:
+要解密数据，你需要使用相同的密钥和 IV 创建一个新的 Twofish 密码对象。
+cipher_dec = Twofish.new(key, Twofish.MODE_CBC, iv=iv)
+plaintext = cipher_dec.decrypt(ciphertext)
+
+# 移除 PKCS#7 填充
+padding_length = plaintext[-1]
+plaintext = plaintext[:-padding_length]
+
+print("Ciphertext:", ciphertext)
+print("Plaintext:", plaintext)
+Use code with caution.
+Python
+完整代码示例:
+from Crypto.Cipher import Twofish
+from Crypto.Random import get_random_bytes
+
+# 生成密钥
+key = get_
+
 以上内容为ai生成
