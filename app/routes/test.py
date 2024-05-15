@@ -1,4 +1,4 @@
-from app.JWT import create_jwt
+from app.secure.JWT import create_jwt
 from config import Config
 
 config = Config()  # 初始化配置

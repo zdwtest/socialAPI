@@ -1,6 +1,6 @@
-from flask import Flask, make_response, request, redirect
-from app.JWT import create_jwt, verify_jwt, create_expiredJWT
-from app.encrypt import encrypt_data, decrypt_data
+from flask import Flask, make_response, request
+from app.secure.JWT import create_jwt, verify_jwt, create_expiredJWT
+from app.secure.encrypt import encrypt_data, decrypt_data
 from config import Config
 
 config = Config()  # 初始化配置

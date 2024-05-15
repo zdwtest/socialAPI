@@ -1,5 +1,5 @@
 import hashlib
-from app.db import connect_database
+from app.database.db import connect_database
 
 
 def login(username, password):

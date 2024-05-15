@@ -117,7 +117,21 @@ Python
 from Crypto.Cipher import Twofish
 from Crypto.Random import get_random_bytes
 
-# 生成密钥
-key = get_
+
+#推文与回复的使用
+user1="kalijerry"
+user2="admin"
+# 创建一条推文
+tweet1 = Tweet.create(user=user1, content='这是一个测试推文', tag='test')
+
+# 创建对推文1的回复
+reply1 = Reply.create(user=user2, tweet=tweet1, content='回复内容')
+
+# 获取推文1的所有回复
+replies = tweet1.replies
+
+# 打印回复内容
+for reply in replies:
+    print(reply.content)
 
 以上内容为ai生成

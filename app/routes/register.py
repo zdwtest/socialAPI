@@ -1,5 +1,4 @@
-from flask import Flask, make_response, request, jsonify, json
-from app.db import connect_database
+from flask import Flask, request, jsonify, json
 from app.services.register import register
 
 app = Flask(__name__)
