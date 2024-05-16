@@ -1,13 +1,13 @@
 #/app/routes/tweetsRoute.py
-from flask import Flask, jsonify, request, json
+from flask import request, json, Blueprint
 from app.services.tweets import TweetService  # 导入 Service 类
 
-app = Flask(__name__)
+tweetRoute = Blueprint('tweetRoute', __name__)
 
 tweet_service = TweetService()  # 实例化 Service
 
 
-@app.route('/tweets', methods=['GET'])
+@tweetRoute.route('/tweets', methods=['GET'])
 def get_tweets():
     """获取 Tweet 表中未被删除或隐藏的 ID 后 10 位内容、标签和其他内容"""
 
@@ -24,9 +24,6 @@ def get_tweets():
 
     return results_json, 200, {'Content-Type': 'application/json; charset=utf-8'}
 
-
-if __name__ == '__main__':
-    app.run(debug=True)
 
 # 使用示例 GET 方法
 # /tweets?tweet_id=1

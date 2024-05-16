@@ -1,22 +1,20 @@
 import random
 import time
 
-from flask import Flask, request, jsonify, json, make_response
+from flask import request, jsonify, json, make_response, Blueprint
 from app.services.login import login, get_uuid
 from app.services.cookie import set_cookies
 
-app = Flask(__name__)
+loginRoute = Blueprint('loginRoute', __name__)
 
 
-@app.route('/login', methods=['POST', 'GET'])
+@loginRoute.route('/login', methods=['POST', 'GET'])
 def login_route():
     if request.method == 'GET':
         # 处理GET请求，例如提供登录页面（如果是API，可以省略）
         response = {"message": "请通过POST请求提交用户名和密码进行登录"}
-        return app.response_class(
-            response=json.dumps(response, ensure_ascii=False),
-            mimetype='application/json'
-        )
+        return json.dumps(response, ensure_ascii=False), 200, {'Content-Type': 'application/json'}
+
 
     elif request.method == 'POST':
         # 获取JSON格式的请求数据
@@ -41,8 +39,7 @@ def login_route():
         # 获取user_id
         uuid = get_uuid(username)
 
-
-#        获取 cookie 数据
+        #        获取 cookie 数据
         cookie_data = set_cookies(username, uuid, session_id, "default")
         auth_token = cookie_data['auth_token']
         encrypted_username = cookie_data['encrypted_username']
@@ -60,7 +57,3 @@ def login_route():
         resp.set_cookie('auth_token', auth_token, httponly=True, samesite='Strict', max_age=3600)
 
         return resp
-
-
-if __name__ == '__main__':
-    app.run(debug=True)
