@@ -1,85 +1,48 @@
-from flask import Flask, jsonify, request
+from datetime import datetime
 
-from app.database.models import Tweet, User
+from app.database.models import User, Tweet
 
-app = Flask(__name__)
-@app.route('/tweets')
-def get_tweets():
-    tweets = Tweet.select().order_by(Tweet.created_at.desc())
-    return jsonify([
-        {
-            'id': tweet.id,
-            'user': tweet.user.username,
-            'content': tweet.content,
-            'tag': tweet.tag,
-            'like': tweet.like,
-            'view': tweet.view,
-            'created_at': tweet.created_at.isoformat()  # 将 datetime 格式化为 ISO 8601 格式
-        } for tweet in tweets
-    ])
 
-@app.route('/tweets', methods=['POST'])
-def create_tweet():
-    data = request.get_json()
-    user = User.get_or_none(User.username == data['kalijerry'])
-    if not user:
-        return jsonify({'error': '用户不存在'}), 400
-    tweet = Tweet.create(
-        user=user,
-        content=data['content'],
-        tag=data['tag']
-    )
-    return jsonify({
-        'id': tweet.id,
-        'user': tweet.user.username,
-        'content': tweet.content,
-        'tag': tweet.tag,
-        'like': tweet.like,
-        'view': tweet.view,
-        'created_at': tweet.created_at.isoformat()  # 将 datetime 格式化为 ISO 8601 格式
-    }), 201
+class TweetService:
+    def get_tweets(self, tag=None, user_id=None, tweet_id=None):
+        """根据不同的参数查询 Tweet 表"""
 
-@app.route('/tweets/<int:tweet_id>')
-def get_tweet(tweet_id):
-    tweet = Tweet.get_or_none(Tweet.id == tweet_id)
-    if not tweet:
-        return jsonify({'error': '推文不存在'}), 404
-    return jsonify({
-        'id': tweet.id,
-        'user': tweet.user.username,
-        'content': tweet.content,
-        'tag': tweet.tag,
-        'like': tweet.like,
-        'view': tweet.view,
-        'created_at': tweet.created_at.isoformat()  # 将 datetime 格式化为 ISO 8601 格式
-    })
+        query = Tweet.select(
+            Tweet.id,
+            Tweet.content,  # 获取完整的 content
+            Tweet.created_at,
+            Tweet.user,
+            Tweet.tag,
+        ).where(
+            Tweet.is_deleted == False
+        )
 
-@app.route('/tweets/<int:tweet_id>', methods=['PUT'])
-def update_tweet(tweet_id):
-    data = request.get_json()
-    tweet = Tweet.get_or_none(Tweet.id == tweet_id)
-    if not tweet:
-        return jsonify({'error': '推文不存在'}), 404
-    tweet.content = data.get('content', tweet.content)
-    tweet.tag = data.get('tag', tweet.tag)
-    tweet.save()
-    return jsonify({
-        'id': tweet.id,
-        'user': tweet.user.username,
-        'content': tweet.content,
-        'tag': tweet.tag,
-        'like': tweet.like,
-        'view': tweet.view,
-        'created_at': tweet.created_at.isoformat()  # 将 datetime 格式化为 ISO 8601 格式
-    })
+        # 添加查询条件
+        if tag:
+            query = query.where(Tweet.tag.contains(tag))
+        if user_id:
+            query = query.where(Tweet.user_id == user_id)
+        if tweet_id:
+            query = query.where(Tweet.id == tweet_id)
 
-@app.route('/tweets/<int:tweet_id>', methods=['DELETE'])
-def delete_tweet(tweet_id):
-    tweet = Tweet.get_or_none(Tweet.id == tweet_id)
-    if not tweet:
-        return jsonify({'error': '推文不存在'}), 404
-    tweet.delete_instance()
-    return jsonify({'message': '推文已删除'}), 204
+        # 限制查询数量
+        query = query.limit(100)
 
-if __name__ == '__main__':
-    app.run(debug=True)
+        # 执行查询并构建结果
+        results = []
+        for tweet in query:
+            # 获取标签名称
+            tag_names = tweet.tag.split(',') if tweet.tag else []
+
+            # 构建结果字典
+            result = {
+                'id': tweet.id,
+                'content': tweet.content or '',  # 修正条件判断
+                'created_at': datetime.fromisoformat(tweet.created_at).isoformat(),  # 将字符串转换为 datetime 对象
+                'user': tweet.user.username,
+                'tag': tag_names,
+            }
+
+            results.append(result)
+
+        return results

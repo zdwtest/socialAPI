@@ -24,9 +24,9 @@ users_del = User.select().where(User.is_deleted == True)
 for User in users_del:
     print(User.username)
 
-#获取被删除的推文
+# 获取被删除的推文
 tweets_del = Tweet.select().where(Tweet.is_deleted == True)
 
-#遍历推文列表
+# 遍历推文列表
 for Tweet in tweets_del:
     print(Tweet.id)
