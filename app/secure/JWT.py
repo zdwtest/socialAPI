@@ -1,5 +1,8 @@
 import jwt
 import datetime
+
+from jwt import ExpiredSignatureError, InvalidTokenError
+
 from config import Config
 
 # 示例密钥（用于签名和验证）
@@ -41,12 +44,14 @@ def create_expiredJWT(data, key):
 
 
 # 验证JWT
-def verify_jwt(token, key):
+def verify_jwt(token):
     try:
-        # 解码JWT
-        payload = jwt.decode(token, key, algorithms=["HS256"])
+        # 解码 JWT
+        payload = jwt.decode(token, SECRET_KEY, algorithms=["HS256"])
         return payload
-    except jwt.ExpiredSignatureError:
-        return "Token has expired"
-    except jwt.InvalidTokenError:
-        return "Invalid token"
+    except ExpiredSignatureError:
+        # Token 过期
+        raise ExpiredSignatureError("Token has expired")
+    except InvalidTokenError:
+        # Token 无效
+        raise InvalidTokenError("Invalid token")
