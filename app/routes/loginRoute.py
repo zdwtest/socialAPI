@@ -23,7 +23,7 @@ def login_route():
 
     elif request.method == 'POST':
         # 获取JSON格式的请求数据
-        # JSON格式为{"username": "kalijerry", "password": "00..Zdw999"}
+        # JSON格式为{"username": "username1", "password": "password1"}
         data = request.json
         username = data.get('username')
         password = data.get('password')
@@ -40,7 +40,6 @@ def login_route():
         timestamp = int(time.time())
         random_part = random.randint(1000, 9999)
         session_id = f"{timestamp}_{random_part}"
-        print(session_id)
         # 获取 cookie 数据
         cookie_data = set_cookies(username, session_id)
         auth_token = cookie_data['auth_token']
