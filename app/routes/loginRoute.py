@@ -1,10 +1,9 @@
 import random
 import time
 
-from flask import Flask, request, jsonify, json, session, make_response
-from app.services.login import login
+from flask import Flask, request, jsonify, json, make_response
+from app.services.login import login, get_uuid
 from app.services.cookie import set_cookies
-
 
 app = Flask(__name__)
 
@@ -38,20 +37,24 @@ def login_route():
         timestamp = int(time.time())
         random_part = random.randint(1000, 9999)
         session_id = f"{timestamp}_{random_part}"
-        #获取user_id
-        user_id = '1'
-        # 获取 cookie 数据
-        cookie_data = set_cookies(username,user_id ,session_id)
+
+        # 获取user_id
+        uuid = get_uuid(username)
+
+
+#        获取 cookie 数据
+        cookie_data = set_cookies(username, uuid, session_id, "default")
         auth_token = cookie_data['auth_token']
-        encrypted_user_id = cookie_data['encrypted_user_id']
+        encrypted_username = cookie_data['encrypted_username']
+        encrypted_uuid = cookie_data['encrypted_user_id']
         encrypted_session_id = cookie_data['encrypted_session_id']
         encrypted_user_prefs = cookie_data['encrypted_user_prefs']
 
         # 设置 cookie
         resp = make_response(json.dumps(response, ensure_ascii=False), 200 if success else 401)
         resp.mimetype = 'application/json'
-        resp.set_cookie('user_name', encrypted_user_id, httponly=True, samesite='Strict', max_age=3600)
-        resp.set_cookie('user_id', encrypted_user_id, httponly=True, samesite='Strict', max_age=3600)
+        resp.set_cookie('user_name', encrypted_username, httponly=True, samesite='Strict', max_age=3600)
+        resp.set_cookie('uuid', encrypted_uuid, httponly=True, samesite='Strict', max_age=3600)
         resp.set_cookie('session_id', encrypted_session_id, httponly=True, samesite='Strict', max_age=3600)
         resp.set_cookie('user_prefs', encrypted_user_prefs, httponly=True, samesite='Strict', max_age=3600)
         resp.set_cookie('auth_token', auth_token, httponly=True, samesite='Strict', max_age=3600)

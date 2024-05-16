@@ -1,4 +1,7 @@
 import hashlib
+
+from flask import json
+
 from app.database.models import User
 
 
@@ -20,19 +23,25 @@ def login(username, password):
         print(f"登录失败: {e}")
         return False, "登录失败，请重试！"
 
-def get_user_id(username):
-    user_id = User.get_or_none(User.username == username)
-    if user_id:
-        return User.id
-    else:
-        return None
+def get_uuid(username):
+    # 查询username的uuid
+    username_to_find = username
+    query = User.select(User.uuid).where(User.username == username_to_find)
 
-username = "kalijerry"
-user_id = get_user_id(username)
+    try:
+        user = query.get()
+        # print(f"The UUID for user '{username_to_find}' is: {user.uuid}")
+        # 将UUID转换为字符串
+        uuid_str = str(user.uuid)
+        # 将字符串序列化为JSON
+        uuid = json.dumps({"uuid": uuid_str})
+        return uuid
+    except User.DoesNotExist:
+        print(f"No user found with username '{username_to_find}'")
+        return None  # 或者你可以选择返回一个默认值
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None  # 捕获其他可能的异常，并返回 None
 
-if user_id:
-    print(f"用户 '{username}' 的 ID 为 {user_id}")
-else:
-    print(f"用户 '{username}' 不存在")
 
 
