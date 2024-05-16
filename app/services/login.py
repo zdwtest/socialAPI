@@ -7,7 +7,7 @@ def login(username, password):
     # 连接到数据库
     conn = connect_database()
     cur = conn.cursor()
-    cur.execute("SELECT * FROM User WHERE username=?", (username,))
+    cur.execute("SELECT * FROM user WHERE username=?", (username,))
     user = cur.fetchone()
 
     if user:

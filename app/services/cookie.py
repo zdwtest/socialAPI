@@ -50,7 +50,6 @@ def set_cookies(user_id, session_id, user_prefs='none'):
 
 
 
-@app.route('/getcookies')  # 测试使用
 def get_cookies():
     encrypted_user_id = request.cookies.get('userid')
     encrypted_session_id = request.cookies.get('session_id')
