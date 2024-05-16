@@ -1,33 +1,37 @@
 import hashlib
-from app.database.db import connect_database
-
+from app.database.models import User
 
 def register(username, password, email, age=None):
     """用户注册"""
-    # 连接到数据库
-    conn = connect_database()
-    cur = conn.cursor()
-
     try:
         # 检查用户名是否已经存在
-        cur.execute("SELECT * FROM User WHERE username=?", (username,))
-        existing_user = cur.fetchone()
+        existing_user = User.get_or_none(User.username == username)
         if existing_user:
             return False, "用户名已经存在，请选择其他用户名！"
+
+        # 检查邮箱是否已经存在
+        existing_email = User.get_or_none(User.email == email)
+        if existing_email:
+            return False, "邮箱地址已经存在，请选择其他邮箱地址！"
 
         # 将密码进行哈希处理
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
-        # 插入新用户到数据库
-        cur.execute("INSERT INTO User (username, password, email, age) VALUES (?, ?, ?, ?)",
-                    (username, hashed_password, email, age))
-        conn.commit()
-        return True, "注册成功！"
-    finally:
-        # 关闭游标和连接
-        cur.close()
-        conn.close()
+        # 创建新用户
+        new_user = User(
+            username=username,
+            password=hashed_password,
+            email=email,
+            age=age
+        )
 
+        # 保存新用户到数据库
+        new_user.save()
+
+        return True, "注册成功！"
+    except Exception as e:
+        print(f"注册失败: {e}")
+        return False, "注册失败，请重试！"
 
 """
 #测试注册
