@@ -20,7 +20,7 @@ def create_jwt(data, key):
     # 构造载荷
     payload = {
         "data": data,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=1)  # 1小时后过期
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24)  # 1小时后过期
     }
     # 生成JWT
     token = jwt.encode(payload, key, algorithm="HS256", headers=header)

@@ -50,10 +50,10 @@ def login_route():
         # 设置 cookie
         resp = make_response(json.dumps(response, ensure_ascii=False), 200 if success else 401)
         resp.mimetype = 'application/json'
-        resp.set_cookie('user_name', encrypted_username, httponly=True, samesite='Strict', max_age=3600)
-        resp.set_cookie('uuid', encrypted_uuid, httponly=True, samesite='Strict', max_age=3600)
-        resp.set_cookie('session_id', encrypted_session_id, httponly=True, samesite='Strict', max_age=3600)
-        resp.set_cookie('user_prefs', encrypted_user_prefs, httponly=True, samesite='Strict', max_age=3600)
-        resp.set_cookie('auth_token', auth_token, httponly=True, samesite='Strict', max_age=3600)
+        resp.set_cookie('user_name', encrypted_username, httponly=True, samesite='Strict', max_age=86400)
+        resp.set_cookie('uuid', encrypted_uuid, httponly=True, samesite='Strict', max_age=86400)
+        resp.set_cookie('session_id', encrypted_session_id, httponly=True, samesite='Strict', max_age=86400)
+        resp.set_cookie('user_prefs', encrypted_user_prefs, httponly=True, samesite='Strict', max_age=86400)
+        resp.set_cookie('auth_token', auth_token, httponly=True, samesite='Strict', max_age=86400)
 
         return resp
