@@ -2,7 +2,8 @@ from datetime import datetime, timezone, timedelta
 
 from app import db  # 从 app/__init__.py 中导入数据库实例
 
-from peewee import CharField, IntegerField, ForeignKeyField, TextField, DateTimeField, AutoField, BooleanField
+from peewee import CharField, IntegerField, ForeignKeyField, TextField, DateTimeField, AutoField, BooleanField, \
+    UUIDField
 
 utc_now = datetime.now(timezone.utc)
 now = bj_dt = utc_now.astimezone(timezone(timedelta(hours=8)))
@@ -13,6 +14,8 @@ now = bj_dt = utc_now.astimezone(timezone(timedelta(hours=8)))
 
 class User(db.Model):
     """用户模型"""
+    user_id = AutoField()  # 自动生成 ID
+    uuid = UUIDField(unique=True)  # UUID 字段
     username = CharField(unique=True)  # 用户名，唯一
     password = CharField()  # 密码哈希值
     email = CharField(unique=True)  # 邮箱，唯一

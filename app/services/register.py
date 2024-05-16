@@ -1,4 +1,5 @@
 import hashlib
+import uuid
 from app.database.models import User
 
 def register(username, password, email, age=None):
@@ -17,8 +18,12 @@ def register(username, password, email, age=None):
         # 将密码进行哈希处理
         hashed_password = hashlib.sha256(password.encode()).hexdigest()
 
+        # 生成 UUID
+        user_uuid = uuid.uuid4()
+
         # 创建新用户
         new_user = User(
+            uuid=user_uuid,
             username=username,
             password=hashed_password,
             email=email,
@@ -32,7 +37,6 @@ def register(username, password, email, age=None):
     except Exception as e:
         print(f"注册失败: {e}")
         return False, "注册失败，请重试！"
-
 """
 #测试注册
 if __name__ == "__main__":

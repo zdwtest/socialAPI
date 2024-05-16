@@ -9,11 +9,12 @@ SECRET_KEY_origin = config.SECRET_KEY  # 引入原始的密钥
 SECRET_KEY = SECRET_KEY_origin.encode('utf-8')  # 进行编码
 
 
-def set_cookies(user_id, session_id, user_prefs='none'):
+def set_cookies(username,user_id, session_id, user_prefs='none'):
     # 创建 JWT
     auth_token = create_jwt({"user_id": user_id, "session_id": session_id}, SECRET_KEY_origin)
 
     # 加密敏感数据
+    encrypt_username=encrypt_data(username, SECRET_KEY)
     encrypted_user_id = encrypt_data(user_id, SECRET_KEY)
     encrypted_session_id = encrypt_data(session_id, SECRET_KEY)
     encrypted_user_prefs = encrypt_data(user_prefs, SECRET_KEY)

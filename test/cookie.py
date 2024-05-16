@@ -12,6 +12,8 @@ def get_cookies_route():
 
 @app.route('/get_decookies')
 def get_decookies_route():
+    user_id = get_deCookies(request)['user_id']
+    print(user_id)
     response = jsonify(get_deCookies(request))
     return response
 

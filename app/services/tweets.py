@@ -1,7 +1,7 @@
 #/app/services/tweets.py
 from datetime import datetime
 
-from app.database.models import User, Tweet
+from app.database.models import  Tweet
 
 
 class TweetService:

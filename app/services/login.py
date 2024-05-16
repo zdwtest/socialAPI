@@ -20,15 +20,19 @@ def login(username, password):
         print(f"登录失败: {e}")
         return False, "登录失败，请重试！"
 
+def get_user_id(username):
+    user_id = User.get_or_none(User.username == username)
+    if user_id:
+        return User.id
+    else:
+        return None
 
-"""
-# 测试登录
-if __name__ == "__main__":
-    # 用户输入用户名和密码
-    username = input("请输入用户名：")
-    password = input("请输入密码：")
+username = "kalijerry"
+user_id = get_user_id(username)
 
-    # 进行登录验证
-    login(username, password)
+if user_id:
+    print(f"用户 '{username}' 的 ID 为 {user_id}")
+else:
+    print(f"用户 '{username}' 不存在")
 
-"""
+
