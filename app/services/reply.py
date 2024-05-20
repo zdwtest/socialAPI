@@ -1,4 +1,4 @@
-#/app/services/reply.py
+# /app/services/reply.py
 from datetime import datetime
 from app.database.models import Reply
 
@@ -41,3 +41,14 @@ class ReplyService:
             results.append(result)
 
         return results
+
+    def create_reply(self, data):
+        """创建新的回复"""
+
+        reply = Reply.create(
+            user=data['user_id'],
+            content=data['content'],
+            tweet=data['tweet_id']
+        )
+
+        return {'success': True, 'message': '回复创建成功'}

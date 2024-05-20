@@ -27,6 +27,8 @@ class User(db.Model):
 class Tweet(db.Model):
     """推文模型"""
     user = ForeignKeyField(User, backref='tweets')  # 关联用户模型，反向关系为 'tweets'
+    page = IntegerField(default=-1)  # 推文页数
+    title = CharField()  # 推文标题
     content = TextField()  # 推文内容
     like = IntegerField(default=0)
     view = IntegerField(default=0)

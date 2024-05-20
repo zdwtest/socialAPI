@@ -2,7 +2,7 @@ import random
 import time
 
 from flask import request, jsonify, json, make_response, Blueprint
-from app.services.login import login, get_uuid
+from app.services.login import login, get_uuid, get_userid
 from app.services.cookie import set_cookies
 
 loginRoute = Blueprint('loginRoute', __name__)
@@ -36,11 +36,12 @@ def login_route():
         random_part = random.randint(1000, 9999)
         session_id = f"{timestamp}_{random_part}"
 
-        # 获取user_id
+        # 获取uuid
         uuid = get_uuid(username)
-
+        # 获取user_id
+        user_id = get_userid(username)
         #        获取 cookie 数据
-        cookie_data = set_cookies(username, uuid, session_id, "default")
+        cookie_data = set_cookies(user_id, username, uuid, session_id, "default")
         auth_token = cookie_data['auth_token']
         encrypted_username = cookie_data['encrypted_username']
         encrypted_uuid = cookie_data['encrypted_user_id']
@@ -50,6 +51,7 @@ def login_route():
         # 设置 cookie
         resp = make_response(json.dumps(response, ensure_ascii=False), 200 if success else 401)
         resp.mimetype = 'application/json'
+        resp.set_cookie('user_id', str(user_id), httponly=True, samesite='Strict', max_age=86400)
         resp.set_cookie('user_name', encrypted_username, httponly=True, samesite='Strict', max_age=86400)
         resp.set_cookie('uuid', encrypted_uuid, httponly=True, samesite='Strict', max_age=86400)
         resp.set_cookie('session_id', encrypted_session_id, httponly=True, samesite='Strict', max_age=86400)

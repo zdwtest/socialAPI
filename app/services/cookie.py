@@ -9,7 +9,7 @@ SECRET_KEY_origin = config.SECRET_KEY  # 引入原始的密钥
 SECRET_KEY = SECRET_KEY_origin.encode('utf-8')  # 进行编码
 
 
-def set_cookies(username, uuid, session_id, user_prefs):
+def set_cookies(user,username, uuid, session_id, user_prefs):
     # 创建 JWT
     auth_token = create_jwt({"user_id": uuid, "session_id": session_id}, SECRET_KEY_origin)
 
@@ -21,6 +21,7 @@ def set_cookies(username, uuid, session_id, user_prefs):
 
     # 创建字典
     cookie_data = {
+        'user_id': user,
         'auth_token': auth_token,
         'encrypted_username': encrypted_username,
         'encrypted_user_id': encrypted_uuid,
@@ -33,17 +34,19 @@ def set_cookies(username, uuid, session_id, user_prefs):
 
 # 获取解密后的Cookies
 def get_deCookies(request):
-    encrypted_user_id = request.cookies.get('user_id')
+    user_id = request.cookies.get('user_id')
+    encrypted_user_id = request.cookies.get('uuid')
     encrypted_session_id = request.cookies.get('session_id')
     encrypted_user_prefs = request.cookies.get('user_prefs')
     auth_token = request.cookies.get('auth_token')
     # 解密Cookie内容
-    user_id = decrypt_data(encrypted_user_id, SECRET_KEY)
+    uuid = decrypt_data(encrypted_user_id, SECRET_KEY)
     session_id = decrypt_data(encrypted_session_id, SECRET_KEY)
     user_prefs = decrypt_data(encrypted_user_prefs, SECRET_KEY)
     # 将多个变量封装成 JSON 对象
     response_data = {
-        'user_id': user_id,
+        'user_id':user_id,
+        'uuid': uuid,
         'session_id': session_id,
         'user_prefs': user_prefs,
         'auth_token': auth_token

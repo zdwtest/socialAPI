@@ -23,6 +23,7 @@ def login(username, password):
         print(f"登录失败: {e}")
         return False, "登录失败，请重试！"
 
+
 def get_uuid(username):
     # 查询username的uuid
     username_to_find = username
@@ -44,4 +45,16 @@ def get_uuid(username):
         return None  # 捕获其他可能的异常，并返回 None
 
 
-
+def get_userid(username):
+    username_to_find = username
+    query = User.select(User.user_id).where(User.username == username_to_find)
+    try:
+        user = query.get()
+        user_id = user.user_id
+        return user_id
+    except User.DoesNotExist:
+        print(f"No user found with username '{username_to_find}'")
+        return None
+    except Exception as e:
+        print(f"An error occurred: {e}")
+        return None
