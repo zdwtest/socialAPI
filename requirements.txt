@@ -1,5 +1,5 @@
 flask
-peewee #数据库连接软件包 sqlite connection package
+peewee #数据库连接软件包
 python-dotenv #获取环境变量
 pycryptodome #加密软件包
 pyjwt #JWT软件包
